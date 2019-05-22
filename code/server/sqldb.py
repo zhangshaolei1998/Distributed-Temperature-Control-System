@@ -17,10 +17,36 @@ def db_init(conn):
     try:
         cur = conn.cursor()
         cur.execute('''
-        create table test
+        create table rdr
         (
-            ID int,
-            name varchar(255)
+            message_id int,
+            room_id int,
+            service_id int,
+            request_time time,
+            request_duration int,
+            fanspeed int,
+            feerate float,
+            fee float
+        );
+        create table invoice
+        (
+            date_in date,
+            date_out date,
+            total_fee float
+        );
+        create table report
+        (
+            date varchar(255),
+            room_id int,
+            service_id int,
+            times_of_onoff int,
+            duration int,
+            total_fee float,
+            times_of_dispatch int,
+            number_of_rdr int,
+            times_of_changetemp int,
+            times_of_changespeed int
+
         );''')
     except:
         print("init fail")
