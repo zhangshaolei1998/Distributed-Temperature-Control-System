@@ -3,7 +3,7 @@ import time
 
 class Service:
 
-    # 初始化实例
+    # 初始化对象
     def __init__(self):
         self.start_time = time.localtime(time.time())
         self.current_time = time.localtime(time.time())
@@ -33,7 +33,7 @@ class Service:
         info = [self.start_time, self.current_time, self.temperature, self.fan_speed]
         return info
 
-    # 销毁实例，返回开始时间、结束时间
+    # 销毁对象，返回开始时间、结束时间
     def __del__(self):
         self.end_time = time.localtime(time.time())
         return [self.start_time, self.end_time]
