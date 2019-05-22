@@ -21,20 +21,22 @@ def db_init(conn):
         (
             room_id int,
             service_id int,
-            day_in varchar(255),
+            day_in date,
             request_time varchar(255),
             request_duration varchar(255),
             fanspeed int,
             feerate float,
             fee float
-        );
+        );''')
+        cur.execute('''
         create table if not exists invoice
         (
             room_id varchar(255),
-            date_in varchar(255),
-            date_out varchar(255),
+            date_in date,
+            date_out date,
             total_fee float
-        );
+        );''')
+        cur.execute('''
         create table if not exists report
         (
             date varchar(255),
