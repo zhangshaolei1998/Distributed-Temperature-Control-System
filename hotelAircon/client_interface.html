@@ -12,43 +12,55 @@
 
 <body>
 <script type="text/javascript" >
-function getXMLHttpRequest(){
-	var xmlhttp;
-	if (window.XMLHttpRequest){
-		xmlhttp=new XMLHttpRequest();
-	}
-	else{
-		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	return xmlhttp;
-}
+var wsUri ="ws://206.189.215.142:3000";
+var ws;
+if ("WebSocket" in window)
+{
+	alert("您的浏览器支持 WebSocket!");
 
-window.onload=function(){
-	var xmlhttp=getXMLHttpRequest();
-	xmlhttp.onreadystatechange=function(){
-		if (xmlhttp.readyState==4 && xmlhttp.status==200){
-			document.getElementById("MessageDisplay").innerHTML=xmlhttp.responseText;
-		}
-	}
-}
+	// 打开一个 web socket
+	ws = new WebSocket(wsUri);
 
-function sendJSON(data){
-	var xmlhttp=getXMLHttpRequest();
-	var stringData=JSON.stringify(data);
-	xmlhttp.open("POST","index.php",true);
-	xmlhttp.setRequestHeader("Content-type","application/json;charset=UTF-8");
-	xmlhttp.send(data);
-	console.log(data);
+
+	ws.onmessage = function (evt) 
+	{ 
+		var received_msg = evt.data;
+		alert("数据已接收...数据内容为："+evt.data);
+	};
+	
+	ws.onclose = function()
+	{ 
+		// 关闭 websocket
+		alert("连接已关闭..."); 
+	};
+}
+	
+else
+{
+	// 浏览器不支持 WebSocket
+	alert("您的浏览器不支持 WebSocket!");
 }
 
 function powerON(){
 	var data={"poweron":{"room_id":0,"cur_temp":0}};
-	sendJSON(data);
+	if(ws.readyState==1)
+	{
+		// Web Socket 已连接上，使用 send() 方法发送数据
+		var data_json=JSON.stringify(data); 
+		ws.send(data_json);
+		alert("数据发送中...数据内容为："+data_json);
+	};
 }
 
 function powerOFF(){
 	var data={"poweroff":{"room_id":0,"state":0}};
-	sendJSON(data);
+	if(ws.readyState==1)
+	{
+		// Web Socket 已连接上，使用 send() 方法发送数据
+		var data_json=JSON.stringify(data); 
+		ws.send(data_json);
+		alert("数据发送中...数据内容为："+data_json);
+	};
 }
 
 function config(){
@@ -61,7 +73,14 @@ function config(){
 	data.config.mode=parseInt(val);
 	val=document.getElementById("target_temp").value;
 	data.config.target_temp=parseInt(val);
-	sendJSON(data);
+	var data_str=JSON.stringify
+	if(ws.readyState==1)
+	{
+		// Web Socket 已连接上，使用 send() 方法发送数据
+		var data_json=JSON.stringify(data); 
+		ws.send(data_json);
+		alert("数据发送中...数据内容为："+data_json);
+	};
 }
 
 function temp_update(){
@@ -70,7 +89,13 @@ function temp_update(){
 	data.temp_update.room_id=0;
 	var val=document.getElementById("cur_temp").value;
 	data.temp_update.cur_temp=parseInt(val);
-	sendJSON(data);
+	if(ws.readyState==1)
+	{
+		// Web Socket 已连接上，使用 send() 方法发送数据
+		var data_json=JSON.stringify(data); 
+		ws.send(data_json);
+		alert("数据发送中...数据内容为："+data_json);
+	};
 }
 </script>
 <header>
