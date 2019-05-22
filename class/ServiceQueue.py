@@ -16,13 +16,20 @@ class ServiceQueue:
     def append_service(self, service_id, service):
         self.service_queue.append([service_id, service])
 
-        return
+        return True
 
     '''
     从service_queue中移除service_id和对应的service,返回service_id和对应的service
     '''
 
     def move_service(self, service_id):
+
+        for i in range(0,len(self.service_queue)):
+            if self.service_queue[i][0]==service_id:
+                service=self.service_queue[i][1]
+                del self.service_queue[i]
+
+
         return service_id, service
 
     '''
@@ -30,7 +37,7 @@ class ServiceQueue:
     '''
     def get_service_num(self):
 
-        return service_num
+        return len(self.service_queue)
 
     '''
     根据调度策略选出即将被移到等待队列的服务
