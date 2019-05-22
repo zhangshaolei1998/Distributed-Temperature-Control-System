@@ -23,6 +23,20 @@ class Application(tornado.web.Application):
 
 
 class MainHandler(tornado.websocket.WebSocketHandler):
+    def get_reply(receive_json):
+        if "poweron" in receive_json:
+            pass
+            return '''setpara-json'''
+        elif "poweroff" in receive_json:
+            pass
+            return '''ok or fail'''
+        elif "config" in receive_json:
+            pass
+            return '''ok or fail'''
+        elif "temp_update" in receive_json:
+            pass
+            return '''finish or null'''
+
     def check_origin(self, origin):
         return True
 
@@ -43,12 +57,8 @@ class MainHandler(tornado.websocket.WebSocketHandler):
         logging.info("message: {}".format(message))
         reply_json = json.dumps(reply)
         '''
-        str = "poweron"
-        if str in receive_json:
-            print("{} Yes".format(str))
-        else:
-            print("{} No".format(str))
-        reply_json = json.dumps(receive_json)
+        #reply_json = json.dumps(receive_json)
+        reply_json = get_reply(receive_json)
         self.write_message(reply_json)
 
 
