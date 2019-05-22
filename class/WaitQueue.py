@@ -18,7 +18,7 @@ class WaitQueue:
         return
 
     '''
-    从service_queue中移除service_id和对应的service,返回service_id和对应的service
+    从wait_queue中移除service_id和对应的service,返回service_id和对应的service
     '''
     def move_service(self,service_id):
 
