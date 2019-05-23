@@ -1,5 +1,5 @@
 import sqlite3
-
+import datetime
 
 def create_connection(db_file=".\sql.db"):
     try:
@@ -17,24 +17,27 @@ def db_init(conn):
     try:
         cur = conn.cursor()
         cur.execute('''
-        create table rdr
+        create table if not exists rdr
         (
-            message_id int,
             room_id int,
             service_id int,
-            request_time time,
-            request_duration int,
+            day_in date,
+            request_time varchar(255),
+            request_duration varchar(255),
             fanspeed int,
             feerate float,
             fee float
-        );
-        create table invoice
+        );''')
+        cur.execute('''
+        create table if not exists invoice
         (
+            room_id varchar(255),
             date_in date,
             date_out date,
             total_fee float
-        );
-        create table report
+        );''')
+        cur.execute('''
+        create table if not exists report
         (
             date varchar(255),
             room_id int,
@@ -48,6 +51,7 @@ def db_init(conn):
             times_of_changespeed int
 
         );''')
+        print("init success")
     except:
         print("init fail")
 
@@ -87,8 +91,55 @@ def db_insert(conn, table, value):
         cur.execute("insert into {} values {};".format(table, value))
     except:
         print("insert fail")
+def get_conn():
+    conn = create_connection()
+    return conn
 
+def set_rdr(room_id, service_id, day_in, duration, fanspeed, feerate, fee):
+    conn = get_conn()
+    cur = conn.cursor()
+    request_time = datetime.datetime.now()
+    cur.execution("insert into rdr values(?,?,?,?,?,?,?,?)",(roomid,service_id,day_in,request_time,duration,fanspeed,feerate,fee))
+    close_connection(conn)
+def get_rdr(roomid, day_in):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execution("select * from rdr where roomid = ? and day_in = ?",(roomid, day_in))
+    close_connection(conn)
+    return cur.fetchall()
+def set_invoice(room_id, day_in):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execution("insert into invoice(roomid, day_in) values(?,?)",(room_id,day_in))
+    close_connection(conn)
+def get_invoice(room_id,day_in):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execution("select * from invoice where room_id = ? and day_in = ?",(room_id,day_in))
+    close_connection(conn)
+    return cur.fetchall()
+def set_report(date, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr, number_of_change_time, number_of_changespeed):
+    conn = get_conn()
+    cursor = conn.cursor()
+    cur.execution("insert into report values(?,?,?,?,?,?,?,?,?,?)",(date,room_id,service-id,times_of_onoff,duration,total_fee,times_of_dispatch,number_of_rdr,times_of_changetemp,times_of_changespeed))
+    close_connection(conn)
 
+def get_report(list_room_id, type_report, date):
+    conn = get_conn()
+    cursor = conn.cursor()
+    report=[]
+    if type_report==0:
+        for room_id in list_room_id:
+            cur.execution("select * from report where room_id=? and date=?",(room_id,date))
+            report.append(cur.fetchone())
+    elif type_report==1:
+        pass
+    else:
+        date1 = date+"-1-1"
+        date2 = date+"-12-31"
+        for room_id in list_room_id:
+            cur.execution("select * from report where room_id=? and date(date) >= date(?) and date(date) <= date(?)",(room_id,date1,date2))
+            report.append(cur.fetchone())
 conn = create_connection()
 db_init(conn)
 close_connection(conn)
