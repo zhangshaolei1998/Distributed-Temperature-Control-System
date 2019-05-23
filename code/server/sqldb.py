@@ -107,10 +107,10 @@ def get_rdr(roomid, day_in):
     cur.execution("select * from rdr where roomid = ? and day_in = ?",(roomid, day_in))
     close_connection(conn)
     return cur.fetchall()
-def set_invoice(room_id, day_in):
+def set_invoice(room_id, day_in,total_fee):
     conn = get_conn()
     cur = conn.cursor()
-    cur.execution("insert into invoice(roomid, day_in) values(?,?)",(room_id,day_in))
+    cur.execution("insert into invoice(roomid, day_in, total_fee) values(?,?,?)",(room_id,day_in,total_fee))
     close_connection(conn)
 def get_invoice(room_id,day_in):
     conn = get_conn()
