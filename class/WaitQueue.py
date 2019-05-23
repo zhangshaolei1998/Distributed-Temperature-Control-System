@@ -12,9 +12,9 @@ class WaitQueue:
     '''
     添加一个service_id和service到wait_queue，返回是否成功
     '''
-    def append_service(self,service_id,service,wait_time):
+    def append_service(self,service_id,service):
 
-        self.wait_queue.append([service_id,service,wait_time])
+        self.wait_queue.append([service_id,service])
         return True;
 
     '''
@@ -29,13 +29,37 @@ class WaitQueue:
 
         return service_id,service
 
-    '''
-    根据调度策略选择下一个执行的service，返回service_id service
-    '''
-    def get_ready_service(self):
 
+    '''
+    选择等待时长最小的服务
+    返回service_id的list
+    '''
+    def get_lowest_wait_service(self):
+        lowest = 0
+        lowest_id = []
+        for i in range(0, len(self.wait_queue)):
+            if self.wait_queue[i][1].wait_time < lowest:
+                lowest = self.wait_queue[i][1].wait_time
+        for i in range(0, len(self.wait_queue)):
+            if self.wait_queue[i][1].wait_time == lowest:
+                lowest_id.append(self.wait_queue[i][0])
 
-        return service_id,service
+        return lowest_id
+
+    '''
+    返回等待时长小于0的服务
+    返回service_id的list
+    '''
+
+    def get_finish_wait_service(self):
+        finished_id = []
+
+        for i in range(0, len(self.wait_queue)):
+            if self.wait_queue[i][1].wait_time <= 0:
+                finished_id.append(self.wait_queue[i][0])
+
+        return finished_id
+
 
     '''
     返回等待队列

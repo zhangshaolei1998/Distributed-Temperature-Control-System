@@ -40,13 +40,41 @@ class ServiceQueue:
         return len(self.service_queue)
 
     '''
-    根据调度策略选出即将被移到等待队列的服务
-    返回service_id和service
+    查找服务队列中服务时长最长的service
+    返回service_id的list
     '''
-    def get_wait_service(self):
+    def get_longest_service(self,speed):
+        longest=0
+        longest_id=[]
+        for i in range(0,len(self.service_queue)):
+            if self.service_queue[i][1].service_time>longest:
+                longest=self.service_queue[i][1].service_time
+        for i in range(0,len(self.service_queue)):
+            if self.service_queue[i][1].service_time==longest:
+                longest_id.append(self.service_queue[i][0])
 
 
-        return service_id,service
+        return longest_id
+
+    '''
+    查找服务队列中风速最短的service
+    返回service_id的list,最低风速
+    '''
+
+    def get_lowest_speed_service(self, speed):
+        lowest = 0
+        lowest_id = []
+        for i in range(0, len(self.service_queue)):
+            if self.service_queue[i][1].fan_speed < lowest:
+                lowest = self.service_queue[i][1].fan_speed
+        for i in range(0,len(self.service_queue)):
+            if self.service_queue[i][1].fan_speed==lowest:
+                lowest_id.append(self.service_queue[i][0])
+
+
+        return lowest_id,lowest
+
+
 
     '''
     返回服务队列
