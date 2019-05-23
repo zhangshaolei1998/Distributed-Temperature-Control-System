@@ -27,6 +27,7 @@ class Dispatcher:
         # 执行策略 ......
 
         self.sq.append_service(service_id, service)
+        return self.sq.service_queue
 
     # 删除某一服务并删除队列信息
     def delete_service(self, room_id):
@@ -43,8 +44,15 @@ class Dispatcher:
     '''
     room_id房间申请服务，
     分配一个service_id根据调度策略将service_id放到等待队列或者服务队列
-    '''
+    
     def add_service(self,room_id):
 
 
         return service_id
+    '''
+
+if __name__ == "__main__":
+    dis=Dispatcher()
+    #测试create_service
+    a=dis.create_service(1)
+    print(a)
