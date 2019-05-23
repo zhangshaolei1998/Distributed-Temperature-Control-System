@@ -20,7 +20,7 @@ def db_init(conn):
         create table if not exists rdr
         (
             room_id int,
-            service_id int,
+            operate_id int,
             day_in date,
             request_time varchar(255),
             request_duration varchar(255),
@@ -41,7 +41,7 @@ def db_init(conn):
         (
             date varchar(255),
             room_id int,
-            service_id int,
+            operate_id int,
             times_of_onoff int,
             duration int,
             total_fee float,
@@ -51,7 +51,7 @@ def db_init(conn):
             times_of_changespeed int
 
         );''')
-        print("init success")
+        print("database init success")
     except:
         print("init fail")
 
@@ -95,11 +95,11 @@ def get_conn():
     conn = create_connection()
     return conn
 
-def set_rdr(room_id, service_id, day_in, duration, fanspeed, feerate, fee):
+def set_rdr(room_id, operate_id, day_in, duration, fanspeed, feerate, fee):
     conn = get_conn()
     cur = conn.cursor()
     request_time = datetime.datetime.now()
-    cur.execution("insert into rdr values(?,?,?,?,?,?,?,?)",(roomid,service_id,day_in,request_time,duration,fanspeed,feerate,fee))
+    cur.execution("insert into rdr values(?,?,?,?,?,?,?,?)",(roomid,operate_id,day_in,request_time,duration,fanspeed,feerate,fee))
     close_connection(conn)
 def get_rdr(roomid, day_in):
     conn = get_conn()
@@ -118,10 +118,10 @@ def get_invoice(room_id,day_in):
     cur.execution("select * from invoice where room_id = ? and day_in = ?",(room_id,day_in))
     close_connection(conn)
     return cur.fetchall()
-def set_report(date, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr, number_of_change_time, number_of_changespeed):
+def set_report(date, times_of_onoff, operate_id, duration, total_fee, times_of_dispatch, number_of_rdr, number_of_change_time, number_of_changespeed):
     conn = get_conn()
     cursor = conn.cursor()
-    cur.execution("insert into report values(?,?,?,?,?,?,?,?,?,?)",(date,room_id,service-id,times_of_onoff,duration,total_fee,times_of_dispatch,number_of_rdr,times_of_changetemp,times_of_changespeed))
+    cur.execution("insert into report values(?,?,?,?,?,?,?,?,?,?)",(date,room_id,operate_id,times_of_onoff,duration,total_fee,times_of_dispatch,number_of_rdr,times_of_changetemp,times_of_changespeed))
     close_connection(conn)
 
 def get_report(list_room_id, type_report, date):
@@ -133,6 +133,12 @@ def get_report(list_room_id, type_report, date):
             cur.execution("select * from report where room_id=? and date=?",(room_id,date))
             report.append(cur.fetchone())
     elif type_report==1:
+        '''
+        import datetime
+    d = "2013-W26"
+    r = datetime.datetime.strptime(d + '-1', "%Y-W%W-%w")
+    print(r)
+        '''
         pass
     else:
         date1 = date+"-1-1"

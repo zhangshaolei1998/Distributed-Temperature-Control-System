@@ -7,6 +7,8 @@ import tornado.websocket
 import tornado.ioloop
 import tornado.options
 import sqldb
+import sys
+sys.path.append("../../class")
 
 
 from tornado.options import define, options
@@ -26,7 +28,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
     def get_reply(receive_json):
         if "poweron" in receive_json:
             pass
-            return '''setpara-json'''
+            return '''ok or fail'''
         elif "poweroff" in receive_json:
             pass
             return '''ok or fail'''
