@@ -43,16 +43,37 @@ class ServiceQueue:
     查找服务队列中服务时长最长的service
     返回service_id的list
     '''
-    def get_longest_service(self,speed):
+    def get_longest_service(self):
         longest=0
         longest_id=[]
+
         for i in range(0,len(self.service_queue)):
             if self.service_queue[i][1].service_time>longest:
                 longest=self.service_queue[i][1].service_time
+
         for i in range(0,len(self.service_queue)):
             if self.service_queue[i][1].service_time==longest:
                 longest_id.append(self.service_queue[i][0])
 
+
+        return longest_id
+
+    '''
+    查找服务队列中给定service_id集合中服务时长最长的service
+    返回service_id的list
+    '''
+
+    def get_longest_service_in_list(self,list):
+        longest = 0
+        longest_id = []
+
+        for i in range(0, len(self.service_queue)):
+            if self.service_queue[i][1].service_time > longest and self.service_queue[i][0] in list:
+                longest = self.service_queue[i][1].service_time
+
+        for i in range(0, len(self.service_queue)):
+            if self.service_queue[i][1].service_time == longest and self.service_queue[i][0] in list:
+                longest_id.append(self.service_queue[i][0])
 
         return longest_id
 
@@ -64,9 +85,11 @@ class ServiceQueue:
     def get_lowest_speed_service(self):
         lowest = 0
         lowest_id = []
+
         for i in range(0, len(self.service_queue)):
             if self.service_queue[i][1].fan_speed < lowest:
                 lowest = self.service_queue[i][1].fan_speed
+
         for i in range(0,len(self.service_queue)):
             if self.service_queue[i][1].fan_speed==lowest:
                 lowest_id.append(self.service_queue[i][0])
@@ -83,6 +106,7 @@ class ServiceQueue:
         for service_map in self.service_queue:
             if service_map[0] == service_id:
                 return service_map[1]
+
         return None
 
 
