@@ -74,6 +74,18 @@ class ServiceQueue:
 
         return lowest_id,lowest
 
+    '''
+    根据service_id 查询service
+    若没有则返回None
+    '''
+
+    def get_service(self, service_id):
+        for service_map in self.service_queue:
+            if service_map[0] == service_id:
+                return service_map[1]
+        return None
+
+
 
 
     '''

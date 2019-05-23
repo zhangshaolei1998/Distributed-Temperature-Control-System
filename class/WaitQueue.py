@@ -62,6 +62,17 @@ class WaitQueue:
 
 
     '''
+    根据service_id 查询service
+    若没有则返回None
+    '''
+    def get_service(self, service_id):
+        for service_map in self.wait_queue:
+            if service_map[0] == service_id:
+                return service_map[1]
+        return None
+
+
+    '''
     返回等待队列
     '''
     def get_wait_queue(self):
