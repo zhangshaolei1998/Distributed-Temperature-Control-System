@@ -61,7 +61,7 @@ class ServiceQueue:
     返回service_id的list,最低风速
     '''
 
-    def get_lowest_speed_service(self, speed):
+    def get_lowest_speed_service(self):
         lowest = 0
         lowest_id = []
         for i in range(0, len(self.service_queue)):
