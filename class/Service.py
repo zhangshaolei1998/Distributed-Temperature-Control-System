@@ -41,11 +41,11 @@ class Service:
 
     # 返回开始时间、当前时间、温度、风速
     def get_info(self):
-        self.current_time = time.localtime(time.time())
+        self.current_time = time.time()
         info = [self.start_time, self.current_time, self.temperature, self.fan_speed]
         return info
 
     # 销毁对象，返回开始时间、结束时间
     def __del__(self):
-        self.end_time = time.localtime(time.time())
+        self.end_time = time.time()
         return [self.start_time, self.end_time]
