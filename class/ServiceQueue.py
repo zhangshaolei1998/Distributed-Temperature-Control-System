@@ -1,4 +1,4 @@
-import Service
+from Service import Service
 
 class ServiceQueue:
     '''
@@ -25,9 +25,12 @@ class ServiceQueue:
     def move_service(self, service_id):
 
         for i in range(0,len(self.service_queue)):
+            #print("********")
+            #print(i)
             if self.service_queue[i][0]==service_id:
                 service=self.service_queue[i][1]
                 del self.service_queue[i]
+                break
 
 
         return service_id, service
@@ -44,11 +47,11 @@ class ServiceQueue:
     返回service_id的list
     '''
     def get_longest_service(self):
-        longest=0
+        longest=-1
         longest_id=[]
 
         for i in range(0,len(self.service_queue)):
-            if self.service_queue[i][1].service_time>longest:
+            if self.service_queue[i][1].service_time>=longest:
                 longest=self.service_queue[i][1].service_time
 
         for i in range(0,len(self.service_queue)):
@@ -64,11 +67,11 @@ class ServiceQueue:
     '''
 
     def get_longest_service_in_list(self,list):
-        longest = 0
+        longest = -1
         longest_id = []
 
         for i in range(0, len(self.service_queue)):
-            if self.service_queue[i][1].service_time > longest and self.service_queue[i][0] in list:
+            if self.service_queue[i][1].service_time >= longest and self.service_queue[i][0] in list:
                 longest = self.service_queue[i][1].service_time
 
         for i in range(0, len(self.service_queue)):
@@ -83,11 +86,11 @@ class ServiceQueue:
     '''
 
     def get_lowest_speed_service(self):
-        lowest = 0
+        lowest = 99
         lowest_id = []
 
         for i in range(0, len(self.service_queue)):
-            if self.service_queue[i][1].fan_speed < lowest:
+            if self.service_queue[i][1].fan_speed <= lowest:
                 lowest = self.service_queue[i][1].fan_speed
 
         for i in range(0,len(self.service_queue)):

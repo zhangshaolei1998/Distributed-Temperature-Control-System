@@ -13,15 +13,37 @@ class Service:
         self.wait_time = 0          # 等待时长
         self.indoor_temp = indoor_temp
         self.temperature = 26
-        self.fan_speed = 0
+        self.fan_speed = 1
+
+    # 更新室内温度，如果达到目标温度，返回TRUE
+    def change_indoor_temp(self, temp):
+        if self.indoor_temp>self.temperature:
+            self.indoor_temp -=temp
+            if self.indoor_temp<=self.temperature:
+                return True
+        else:
+            self.indoor_temp += temp
+            if self.indoor_temp >= self.temperature:
+                return True
+
+        return False
+
 
     # 更新服务时长
     def set_service_time(self, service_time):
         self.service_time = service_time
 
+    # 增加服务时长
+    def add_service_time(self, time):
+        self.service_time += time
+
     # 更新等待时长
     def set_wait_time(self, wait_time):
         self.wait_time = wait_time
+
+    # 减少等待时长
+    def reduce_wait_time(self, time):
+        self.wait_time -= time
 
     # 设置温度
     def set_temperature(self, temp):

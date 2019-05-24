@@ -23,9 +23,11 @@ class WaitQueue:
     def move_service(self,service_id):
 
         for i in range(0,len(self.wait_queue)):
+
             if self.wait_queue[i][0]==service_id:
                 service=self.wait_queue[i][1]
                 del self.wait_queue[i]
+                break
 
         return service_id,service
 
@@ -35,10 +37,10 @@ class WaitQueue:
     返回service_id的list
     '''
     def get_lowest_wait_service(self):
-        lowest = 0
+        lowest = 9999999
         lowest_id = []
         for i in range(0, len(self.wait_queue)):
-            if self.wait_queue[i][1].wait_time < lowest:
+            if self.wait_queue[i][1].wait_time <= lowest:
                 lowest = self.wait_queue[i][1].wait_time
         for i in range(0, len(self.wait_queue)):
             if self.wait_queue[i][1].wait_time == lowest:
@@ -71,6 +73,13 @@ class WaitQueue:
                 return service_map[1]
         return None
 
+    '''
+    返回服务队列中的数量
+    '''
+
+    def get_wait_num(self):
+
+        return len(self.wait_queue)
 
     '''
     返回等待队列
