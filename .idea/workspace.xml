@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ee5fa13c-6f87-4f78-84f3-be53b614d12e" name="默认的" comment="">
-      <change beforePath="$PROJECT_DIR$/class/.idea/workspace.xml" afterPath="$PROJECT_DIR$/class/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/class/Dispatcher.py" afterPath="$PROJECT_DIR$/class/Dispatcher.py" />
-      <change beforePath="$PROJECT_DIR$/class/Service.py" afterPath="$PROJECT_DIR$/class/Service.py" />
-      <change beforePath="$PROJECT_DIR$/class/ServiceQueue.py" afterPath="$PROJECT_DIR$/class/ServiceQueue.py" />
-      <change beforePath="$PROJECT_DIR$/class/WaitQueue.py" afterPath="$PROJECT_DIR$/class/WaitQueue.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -23,8 +20,8 @@
       <file leaf-file-name="Dispatcher.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/class/Dispatcher.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="531">
-              <caret line="275" column="23" lean-forward="true" selection-start-line="275" selection-start-column="23" selection-end-line="275" selection-end-column="23" />
+            <state relative-caret-position="312">
+              <caret line="202" column="44" lean-forward="true" selection-start-line="202" selection-start-column="44" selection-end-line="202" selection-end-column="44" />
               <folding>
                 <element signature="e#0#27#0" expanded="true" />
               </folding>
@@ -90,7 +87,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-7" />
     <option name="width" value="974" />
     <option name="height" value="774" />
@@ -195,7 +192,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1053" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1053" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -261,8 +258,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/class/Dispatcher.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="531">
-          <caret line="275" column="23" lean-forward="true" selection-start-line="275" selection-start-column="23" selection-end-line="275" selection-end-column="23" />
+        <state relative-caret-position="312">
+          <caret line="202" column="44" lean-forward="true" selection-start-line="202" selection-start-column="44" selection-end-line="202" selection-end-column="44" />
           <folding>
             <element signature="e#0#27#0" expanded="true" />
           </folding>
