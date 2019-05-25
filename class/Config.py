@@ -7,9 +7,9 @@ class Config:
     min_speed = 0
     max_speed = 5
     default_speed = 1
-    FeeRate_H = 3
-    FeeRate_M = 2
-    FeeRate_L = 1
+    FeeRate_H = 2
+    FeeRate_M = 1
+    FeeRate_L = 0.5
 
     # 类方法
     @staticmethod
