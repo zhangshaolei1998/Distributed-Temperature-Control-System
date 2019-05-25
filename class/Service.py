@@ -17,9 +17,9 @@ class Service:
 
     # 更新室内温度，如果达到目标温度，返回TRUE
     def change_indoor_temp(self, temp):
-        if self.indoor_temp>self.temperature:
-            self.indoor_temp -=temp
-            if self.indoor_temp<=self.temperature:
+        if self.indoor_temp > self.temperature:
+            self.indoor_temp -= temp
+            if self.indoor_temp <= self.temperature:
                 return True
         else:
             self.indoor_temp += temp
@@ -28,22 +28,21 @@ class Service:
 
         return False
 
-
     # 更新服务时长
     def set_service_time(self, service_time):
         self.service_time = service_time
 
     # 增加服务时长
-    def add_service_time(self, time):
-        self.service_time += time
+    def add_service_time(self, time_interval):
+        self.service_time += time_interval
 
     # 更新等待时长
     def set_wait_time(self, wait_time):
         self.wait_time = wait_time
 
     # 减少等待时长
-    def reduce_wait_time(self, time):
-        self.wait_time -= time
+    def reduce_wait_time(self, time_interval):
+        self.wait_time -= time_interval
 
     # 设置温度
     def set_temperature(self, temp):
@@ -70,4 +69,3 @@ class Service:
     # 销毁对象，返回开始时间、结束时间
     def __del__(self):
         self.end_time = time.time()
-        return [self.start_time, self.end_time]
