@@ -13,6 +13,8 @@ sys.path.append("../../class")
 
 from tornado.options import define, options
 import json
+import Dispatcher
+import time
 
 define("port", default=3000, help="run on the given port", type=int)
 
@@ -25,12 +27,17 @@ class Application(tornado.web.Application):
 
 
 class MainHandler(tornado.websocket.WebSocketHandler):
+    dispatcher = Dispatcher()
     def get_reply(receive_json):
         if "poweron" in receive_json:
             pass
+            while(1):
+                dispatcher.PowerOn()
+                time.sleep(1)
             return '''ok or fail'''
         elif "poweroff" in receive_json:
             pass
+
             return '''ok or fail'''
         elif "config" in receive_json:
             pass

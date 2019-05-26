@@ -6,7 +6,7 @@ import time
 import sys
 
 sys.path.append("..\code\server")
-import sqldb
+from sqldb import *
 
 class Dispatcher:
 
