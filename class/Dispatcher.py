@@ -3,9 +3,10 @@ from ServiceQueue import ServiceQueue
 from WaitQueue import WaitQueue
 from Config import Config
 import time
+import sys
 
-sys.path.append("../code/server")
-import sqldb from sqldb
+sys.path.append("..\code\server")
+import sqldb
 
 class Dispatcher:
 
