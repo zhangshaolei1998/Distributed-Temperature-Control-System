@@ -185,16 +185,20 @@ class Dispatcher:
                 return service_id, None
         return service_id, service
 
+    # 调节模式
+    def change_mode(self, room_id, mode):
+        service_id, service = self.find_service(room_id)
+        return service.set_mode(mode)
+
     # 调节温度
     def change_temperature(self, room_id, temp):
         service_id, service = self.find_service(room_id)
-        service.set_temperature(temp)
+        return service.set_temperature(temp)
 
     # 调节风速
     def change_fan_speed(self, room_id, speed):
         service_id, service = self.find_service(room_id)
-        service.set_fan_speed(speed)
-
+        return service.set_fan_speed(speed)
 
     def GetServiceFee(self,service_id, day_in):
         for i in range(len(self.lists)):
