@@ -8,6 +8,7 @@ import tornado.ioloop
 import tornado.options
 import sqldb
 import sys
+import threading
 sys.path.append("../../class")
 
 
@@ -27,24 +28,25 @@ class Application(tornado.web.Application):
 
 
 class MainHandler(tornado.websocket.WebSocketHandler):
-    dispatcher = Dispatcher()
-    def get_reply(receive_json):
-        if "poweron" in receive_json:
-            pass
-            while(1):
-                dispatcher.PowerOn()
-                time.sleep(1)
+    dispatcher = Dispatcher.Dispatcher()
+    timer = threading.Timer(1.0,dispatcher.run())
+    def get_reply(r_json):
+        if "poweron" in r_json:
+            timer.start()
+            dispatcher.PowerOn()
             return '''ok or fail'''
-        elif "poweroff" in receive_json:
+        elif "poweroff" in r_json:
             pass
+            dispatcher.delete_sevice(r_json['poweroff']['room_id'])
+            timer.cancel()
+            return '''ok or fail'''
+        elif "config" in r_json:
+            return '''ok or fail'''
+        elif "temp_update" in r_json:
 
-            return '''ok or fail'''
-        elif "config" in receive_json:
-            pass
-            return '''ok or fail'''
-        elif "temp_update" in receive_json:
-            pass
             return '''finish or null'''
+        else:
+            return "format error"
 
     def check_origin(self, origin):
         return True
