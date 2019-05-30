@@ -23,10 +23,10 @@ class Dispatcher:
         self.wq = WaitQueue()
         self.max_service_id=0 #当前最大的service_id
         self.max_service=3 #允许同时服务最大数量
-        self.wait_time=120000 #默认等待服务时长 120000ms
+        self.wait_time=120 #默认等待服务时长 120s
         self.max_wait_time = 999999999999  # 最大等待服务时长，若等待时长为此值，等待时长不减少，服务队列空的时候才加入服务队列
-        self.unit=60000 #时间片长度60000ms，每次运行一次run
-        self.per_var=[0,1,2,3] #单位时间，各档风速对应的温度改变
+        self.unit=60 #时间片长度60s
+
 
     # 创建一个服务并添加队列信息
     def create_service(self, room_id,indoor_temp):
@@ -36,10 +36,13 @@ class Dispatcher:
         self.max_service_id += 1
         self.lists.append([room_id, service_id])
 
+        flag=-1
         # 执行策略 ......
         if(self.sq.get_service_num()<self.max_service):
             self.sq.append_service(service_id, service)
+            flag=2
         else:
+            flag=1
             lowest_id,lowest_speed=self.sq.get_lowest_speed_service()
             #print(lowest_id)
             if service.fan_speed>lowest_speed :
@@ -78,22 +81,21 @@ class Dispatcher:
 
 
 
-        return self.sq.service_queue
+        return flag
 
 
     '''
-    单位时间运行一次，遍历等待队列，服务队列
-    返回结束的room_id的list
+    每次更新完温度，调用一次。
     '''
 
-    def run(self):
+    def dispatch(self):
 
         finish_id=[] #记录达到目标温度的room_id
 
         #遍历服务队列。若服务完成，则移出队列
         for service_map in self.sq.service_queue:
             service_map[1].add_service_time(self.unit)
-            is_finished=service_map[1].change_indoor_temp(self.per_var[service_map[1].fan_speed])
+            is_finished=service_map[1].is_finished()
             if is_finished:
                 move_id, move_service = self.sq.move_service(service_map[0])
                 finish_id.append(self.service_id2room_id(move_id))
@@ -126,8 +128,32 @@ class Dispatcher:
             # 移入服务队列
             self.sq.append_service(service_id, service)
 
-
         return finish_id #返回结束服务的room_id
+
+
+    # 更新室内温度，如果达到目标温度，返回TRUE，否则返回False
+    def set_indoor_temp(self, room_id, temp):
+        service_id, service = self.find_service(room_id)
+        is_finished = service.is_finished()
+        if is_finished:
+            move_id, move_service = self.sq.move_service(service_id)
+            return True
+        return False
+
+    '''
+    返回每个房间的信息。list
+    list[i][0]为room_id，list[i][1]为状态，1：处于等待队列，2：处于服务队列。
+    '''
+
+    def show_state(self):
+        state=[]
+        for service_map in self.wq.wait_queue:
+            state.append([self.service_id2room_id(service_map[0]),1])
+        for service_map in self.sq.service_queue:
+            state.append([self.service_id2room_id(service_map[0]),2])
+
+        return state
+
 
     '''
     通过service_id 转成对应的room_id
@@ -220,17 +246,23 @@ class Dispatcher:
         self.SettingMode = True
         return True
 
-
     # 设置config
-    def SetPara(self, Mode, Temp_lowLimit, Temp_highLimit, default_TargetTemp, min_speed, max_speed, default_speed,
-                FeeRate_H, FeeRate_M, FeeRate_L):
+
+    def SetPara(self, Temp_lowLimit, Temp_highLimit, min_speed, max_speed,
+            FeeRate_H, FeeRate_M, FeeRate_L):
         if self.SettingMode:
-            Config.set_para(Mode, Temp_lowLimit, Temp_highLimit, default_TargetTemp, min_speed, max_speed,
-                            default_speed, FeeRate_H, FeeRate_M, FeeRate_L)
+            Config.set_para(Temp_lowLimit, Temp_highLimit, min_speed, max_speed,
+                            FeeRate_H, FeeRate_M, FeeRate_L)
             return True
         else:
             return False
 
+    def SetDefaultPara(self, Mode, default_TargetTemp, default_speed):
+        if self.SettingMode:
+            Config.set_default_para(Mode, default_TargetTemp, default_speed)
+            return True
+        else:
+            return False
 
     # 返回各房间的状态信息：状态信息：（是否开机，是否正在服务，是否被挂起），当前室温，目标温度，风速，费率，费用，服务时长
     def GetRoomState(self, room_id):

@@ -12,19 +12,15 @@ class Service:
         self.service_time = 0       # 服务时长
         self.wait_time = 0          # 等待时长
         self.indoor_temp = indoor_temp
-        self.mode = 0
-        self.temperature = 26
-        self.fan_speed = 1
+        self.mode = Config.mode
+        self.temperature = Config.default_temp
+        self.fan_speed = Config.default_speed
 
-    # 更新室内温度，如果达到目标温度，返回TRUE
-    def change_indoor_temp(self, temp):
-        if self.indoor_temp > self.temperature:
-            self.indoor_temp -= temp
-            if self.indoor_temp <= self.temperature:
+    # 判断是否达到目标温度，若达到返回TRUE
+    def is_finished(self):
+        if self.indoor_temp > self.temperature and self.mode==2:
                 return True
-        else:
-            self.indoor_temp += temp
-            if self.indoor_temp >= self.temperature:
+        elif self.indoor_temp < self.temperature and self.mode==1:
                 return True
         return False
 
@@ -44,7 +40,7 @@ class Service:
     def reduce_wait_time(self, time_interval):
         self.wait_time -= time_interval
 
-    # 设置模式(暂定为制冷、制热、除湿、送风)
+    # 设置模式(暂定为制冷、制热)用1、2表示
     def set_mode(self, mode):
         if 0 <= mode <= 3:
             self.mode = mode
