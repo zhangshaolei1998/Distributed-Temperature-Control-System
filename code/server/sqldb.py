@@ -142,11 +142,11 @@ def get_report(list_room_id, type_report, date):
     conn = get_conn()
     cur = conn.cursor()
     report=[]
-    date = datetime.datetime.strptime(date,"%Y-%m-%d")
     if type_report==0:
+        date = datetime.datetime.strptime(date,"%Y-%m-%d")
         for room_id in list_room_id:
             cur.execute("select * from report where room_id=? and date=?",(room_id,date))
-            report.append(cur.fetchone())
+            report.append(cur.fetchall())
     elif type_report==1:
         '''
         import datetime
@@ -156,18 +156,21 @@ def get_report(list_room_id, type_report, date):
         '''
         d = date
         r1 = datetime.datetime.strptime(d + '-1',"%Y-W%W-%w")
-        date1 = str(r1).split()[0]
+        date1 = r1
         r2 += datetime.timedelta(days=6)
-        date2 = str(r2).split()[0]
+        date2 = r2
         for room_id in list_room_id:
             cur.execute("select * from report where room_id=? and date(date) >=date(?) and date(date) <=date(?)",(room_id,date1,date2))
-        pass
+            report.append(cur.fetchall())
+        return report
     else:
         date1 = date+"-1-1"
+        date1 = datetime.datetime.strptime(date1,"%Y-%m-%d")
         date2 = date+"-12-31"
+        date2 = datetime.datetime.strptime(date2,"%Y-%m-%d")
         for room_id in list_room_id:
             cur.execute("select * from report where room_id=? and date(date) >= date(?) and date(date) <= date(?)",(room_id,date1,date2))
-            report.append(cur.fetchone())
+            report.append(cur.fetchall())
     return report
 conn = create_connection()
 db_init(conn)
@@ -183,5 +186,6 @@ close_connection(conn)
 #set_invoice(1,"2019-1-2",123.544)
 #print(get_invoice(1,"2019-1-2"))
 #set_report(date, times_of_onoff, operate_id, duration, total_fee, times_of_dispatch, number_of_rdr, number_of_change_time, number_of_changespeed)
-#set_report("2019-4-5",1,1,1,12,12.1,12,12,1,1)
-print(get_report([1],0,"2019-4-5"))
+#set_report("2019-4-6",1,2,1,12,12.1,12,12,1,1)
+#print(get_report([1],0,"2019-4-5"))
+print(get_report([1],2,"2019"))
