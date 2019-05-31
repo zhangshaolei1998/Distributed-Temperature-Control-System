@@ -225,17 +225,17 @@ class Dispatcher:
     # 调节风速
     def change_fan_speed(self, room_id, speed):
 	    service_id, service = self.find_service(room_id)
-	    judge=Service.set_fan_speed(speed)
+	    judge=Service.set_fan_speed(speed)#查看修改风速请求是否被允许
 	    if judge==False:
 		    return False
 	    else:
-	        SerQue=ServiceQueue.get_service_queue
-	        WaiQue=WaitQueue.get_wait_queue
-	        LowService=SerQue[0][1]
-	        HighWait=WaiQue[0][1]
-	        LowServiceId=SerQue[0][0]
+	        SerQue=ServiceQueue.get_service_queue#获取服务队列
+	        WaiQue=WaitQueue.get_wait_queue#获取等待队列
+	        LowService=SerQue[0][1]#存储服务队列中优先级最低的服务
+	        HighWait=WaiQue[0][1]#存储等待队列中优先级最高的服务
+	        LowServiceId=SerQue[0][0]#分别存储二者id
 	        HighWaitId=WaiQue[0][0]
-	        for i in range(0, len(SerQue)):
+	        for i in range(0, len(SerQue)):#遍历服务队列，寻找等级最低的服务
 	            if LowService.fan_speed>SerQue[i][1].fan_speed:
 	                LowService=SerQue[i][1]
 	                LowServiceId=SerQue[i][0]
@@ -243,7 +243,7 @@ class Dispatcher:
 	                if LowService.service_time<SerQue[i][1].service_time:
 	                    LowService=SerQue[i][1]
 	                    LowServiceId=SerQue[i][0]
-	        for i in range(0, len(WaiQue)):
+	        for i in range(0, len(WaiQue)):#遍历等待队列，寻找等级最高的服务
 	            if HighWait.fan_speed<WaiQue[i][1].fan_speed:
 	                HighWait=WaiQue[i][1]
 	                HighWaitId=WaiQue[i][0]
@@ -251,8 +251,8 @@ class Dispatcher:
 	                if HighWait.wait_time>WaiQue[i][1].wait_time:
 	                    HighWait=WaiQue[i][1]
 	                    HighWaitId=WaiQue[i][0]
-	        if HighWait.fan_speed > LowService.fan_speed :
-	            ServiceQueue.move_service(LowServiceId)
+	        if HighWait.fan_speed > LowService.fan_speed :#判断是否需要进行调度
+	            ServiceQueue.move_service(LowServiceId)#进行调度具体过程
 	            WaitQueue.move_service(HighWaitId)
 	            ServiceQueue.append_service(HighWaitId,HighWait)
 	            WaitQueue.append_service(LowServiceId,LowService)
