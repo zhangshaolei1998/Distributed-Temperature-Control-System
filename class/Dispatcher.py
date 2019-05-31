@@ -146,11 +146,11 @@ class Dispatcher:
     '''
 
     def show_state(self):
-        state=[]
+        state={}
         for service_map in self.wq.wait_queue:
-            state.append([self.service_id2room_id(service_map[0]),1])
+            state.setdefault(self.service_id2room_id(service_map[0]), 1)
         for service_map in self.sq.service_queue:
-            state.append([self.service_id2room_id(service_map[0]),2])
+            state.setdefault(self.service_id2room_id(service_map[0]), 2)
 
         return state
 
