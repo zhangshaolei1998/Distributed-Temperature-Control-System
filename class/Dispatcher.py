@@ -200,7 +200,6 @@ class Dispatcher:
             service = self.wq.get_service(service_id)
             if service is not None:
                 self.wq.move_service(service_id)
-	
 	return True
 
     # 根据room_id找到ServiceQueue或WaitQueue里边的Service对象
@@ -350,7 +349,7 @@ class Dispatcher:
                   "temperature: ", self.wq.wait_queue[i][1].temperature,"|",
                   "fan_speed: ", self.wq.wait_queue[i][1].fan_speed)
 
-            
+
     def check_room_state(self):
         for room_service in self.lists:
             room_id = room_service[0]
