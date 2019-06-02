@@ -230,17 +230,18 @@ class Dispatcher:
     # 调节风速
     def change_fan_speed(self, room_id, speed):
         service_id, service = self.find_service(room_id)
-        judge=Service.set_fan_speed(speed)#查看修改风速请求是否被允许
-        if judge==False:
-                return False
+        if Config.min_speed <= speed <= Config.max_speed:
+            Service.fan_speed = speed
         else:
-            SerQue=ServiceQueue.get_service_queue#获取服务队列
-            WaiQue=WaitQueue.get_wait_queue#获取等待队列
-            LowService=SerQue[0][1]#存储服务队列中优先级最低的服务
-            HighWait=WaiQue[0][1]#存储等待队列中优先级最高的服务
-            LowServiceId=SerQue[0][0]#分别存储二者id
-            HighWaitId=WaiQue[0][0]
-        for i in range(0, len(SerQue)):#遍历服务队列，寻找等级最低的服务
+            return False
+        #查看修改风速请求是否被允许
+        SerQue=self.sq.get_service_queue()#获取服务队列
+        WaiQue=self.wq.get_wait_queue()#获取等待队列
+        LowService=SerQue[0][1]#存储服务队列中优先级最低的服务
+        HighWait=WaiQue[0][1]#存储等待队列中优先级最高的服务
+        LowServiceId=SerQue[0][0]#分别存储二者id
+        HighWaitId=WaiQue[0][0]
+        for i in range (len(SerQue)):#遍历服务队列，寻找等级最低的服务
                 if LowService.fan_speed>SerQue[i][1].fan_speed:
                     LowService=SerQue[i][1]
                     LowServiceId=SerQue[i][0]
@@ -371,16 +372,10 @@ class Dispatcher:
 if __name__ == "__main__":
     dis=Dispatcher()
     #测试create_service
-    a=dis.create_service(1,16)
-    a = dis.create_service(1, 16)
+    a=dis.create_service("1",17)
+    a=dis.create_service("4", 18)
     #time.sleep(10)
-    a = dis.create_service(1, 16)
-    a = dis.create_service(1, 16)
-
-    dis.print_queue()
-
-    for j in range(0,6):
-        print("unit",j)
-        a=dis.run()
-        dis.print_queue()
-
+    a = dis.create_service("2", 16)
+    a = dis.create_service("3", 16)
+    dis.change_fan_speed("1",1)
+    #dis.change_fan_speed(123,1)
