@@ -203,7 +203,7 @@
 			}
 		　　}, 
 		　　websocketsend(dataObj){//数据发送 
-				dataJoson = JSON.stringify(dataObj);
+				var dataJoson = JSON.stringify(dataObj);
 				console.log(dataJoson);
 				this.websock.send(dataJoson); 
 		　　}, 
