@@ -178,6 +178,8 @@ class Dispatcher:
         # 删除服务对象
         if service is not None:
             del service
+        else:
+            return False
 
         i = 0
         exist = 0
@@ -198,6 +200,8 @@ class Dispatcher:
             service = self.wq.get_service(service_id)
             if service is not None:
                 self.wq.move_service(service_id)
+	
+	return True
 
     # 根据room_id找到ServiceQueue或WaitQueue里边的Service对象
     def find_service(self, room_id):
