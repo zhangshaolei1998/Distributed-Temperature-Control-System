@@ -351,15 +351,16 @@ class Dispatcher:
             service_id, service = self.find_service(room_id)
             # state 只有开机的服务，关机的已被删除
             if self.sq.get_service(service_id) is not None:
-                state = 1 # 表示正在服务
+                state = 2 # 表示正在服务
             else:
-                state = 0 # 表示正在等待
+                state = 1 # 表示正在等待
             current_temp = service.indoor_temp
             target_temp = service.temperature
             fan_speed = service.fan_speed
-            fee_rate = #三种费率选哪个
+            fee_rate = 1#三种费率选哪个
+            day_in=0
             fee = self.GetRoomFee(room_id, day_in) #day_in从哪获得？
-            duration = #哪里获得duration
+            duration = service.service_time#哪里获得duration
 
 
 if __name__ == "__main__":
