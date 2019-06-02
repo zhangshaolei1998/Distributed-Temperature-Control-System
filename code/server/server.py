@@ -15,7 +15,7 @@ sys.path.append("../../class")
 from tornado.options import define, options
 import json
 import Dispatcher
-import Config
+from Config import Config
 import time
 
 define("port", default=3000, help="run on the given port", type=int)
@@ -34,15 +34,21 @@ class MainHandler(tornado.websocket.WebSocketHandler):
     users=set()
     user2room_id={}
     def broadcast(self, state):
-        for i in users:
-            i.write_massage(state[user2room_id[i]])
+        for i in self.users:
+            i.write_message(str(state[self.user2room_id[i]]))
     def get_reply(self,r_json):
         if "poweron" in r_json:
-            user2room_id[self] = r_json["room_id"]
             r_json = r_json['poweron']
-            dispatcher.create_service(r_json['room_id'],r_json['cur_temp'])
+            self.user2room_id[self] = r_json["room_id"]
+            flag = self.dispatcher.create_service(r_json['room_id'],r_json['cur_temp'])
+            if flag == 2:
+                self.write_message(json.dumps({"poweron":"ok"}))
+            elif flag == 1:
+                self.write_message(json.dumps({"poweron":"busy"}))
+            else:
+                self.write_message(json.dumps({"poweron":"error"}))
             para = {
-                "setpara" : {
+                    "setpara" : {
                     "mode" : Config.mode,
                     "target_temp" : Config.default_temp,
                     "highlimit_temp" : Config.max_temp,
@@ -50,36 +56,41 @@ class MainHandler(tornado.websocket.WebSocketHandler):
                     "highfan_change_temp" : Config.FeeRate_H,
                     "lowfan_change_temp" : Config.FeeRate_L,
                     "medfan_change_temp": Config.FeeRate_M,
-                    "fan" : Config.fan
+                    "fan" : Config.default_speed
                     }
                 }
             return json.dumps(para)
         elif "poweroff" in r_json:
             r_json = r_json['poweroff']
-            dispatcher.delete_sevice(r_json['room_id'])
-            return '''ok or fail'''
+
+            if self.dispatcher.delete_service(r_json['room_id']):
+                return json.dumps({'poweroff':'ok'})
+            else:
+                return json.dumps({'poweroff':'fail'})
         elif "config" in r_json:
             r_json = r_json['config']
-            if r_json['mode']!=0:
-                dispatcher.change_mode(r_json['room_id'],r_json['mode'])
-            if r_json['target_temp']!=0:
-                dispatcher.change_temperature(r_json['room_id'],r_json['target_temp'])
-            if r_json['fan']!=0:
-                dispatcher.change_fan(r_json['room_id'],r_json['fan'])
-                dispatcher.show_state()
-            return 'ok'
+            if 'mode' in r_json:
+                self.dispatcher.change_mode(r_json['room_id'],r_json['mode'])
+            if 'target_temp' in r_json:
+                self.dispatcher.change_temperature(r_json['room_id'],r_json['target_temp'])
+            if 'fan' in r_json:
+                print(r_json['fan'])
+                self.dispatcher.change_fan_speed(r_json['room_id'],r_json['fan'])
+                self.broadcast(self.dispatcher.show_state())
+            return json.dumps({"config":"ok"})
         elif "temp_update" in r_json:
             r_json = r_json['temp_update']
-            dispatch.set_indoor_temp(r_json['room_id'],r_json['cur_temp'])
-            dispatch.dispatch()
-            state = dispatcher.show_state()
-            return state
+            self.dispatcher.set_indoor_temp(r_json['room_id'],r_json['cur_temp'])
+            self.dispatcher.dispatch()
+            state = self.dispatcher.show_state()
+            broadcast(state)
+            return json.dumps({"finish":""})
         elif "server_config" in r_json:
             r_json = r_json['server_config']
-            dispatcher.SetPara(
-                r_json['Temp_lowlimit'],
+            self.dispatcher.SetPara(
+                r_json['Temp_lowLimit'],
                 r_json['Temp_highLimit'],
-                r_json['min_speed'].
+                r_json['min_speed'],
                 r_json['max_speed'],
                 r_json['FeeRate_H'],
                 r_json['FeeRate_M'],
@@ -87,7 +98,13 @@ class MainHandler(tornado.websocket.WebSocketHandler):
                 )
             return 'ok'
         elif "CheckRoomState" in r_json:
-                pass
+            ret = self.dispatcher.check_room_state()
+                return ret
+        elif "startUp" in r_json:
+
+            return 'ok'
+        else:
+            print("json format error")
 
     def check_origin(self, origin):
         return True
@@ -112,7 +129,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
         reply_json = json.dumps(reply)
         '''
         #reply_json = json.dumps(receive_json)
-        reply_json = get_reply(receive_json)
+        reply_json = self.get_reply(receive_json)
         self.write_message(reply_json)
 
 
