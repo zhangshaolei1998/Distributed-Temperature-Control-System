@@ -13,6 +13,8 @@ class Dispatcher:
     '''
     初始化
     service_num:服务对象数量上限
+
+    处于等待队列返回1 服务队列返回2
     '''
 
     request_num = 0
@@ -28,7 +30,7 @@ class Dispatcher:
         self.unit=60 #时间片长度60s
 
 
-    # 创建一个服务并添加队列信息
+    # 创建一个服务并添加队列信息 返回1：busy 返回2：ok 返回3：error
     def create_service(self, room_id,indoor_temp):
         service = Service(indoor_temp)
         # service_id记录每一次服务
@@ -235,7 +237,7 @@ class Dispatcher:
 	        HighWait=WaiQue[0][1]#存储等待队列中优先级最高的服务
 	        LowServiceId=SerQue[0][0]#分别存储二者id
 	        HighWaitId=WaiQue[0][0]
-	        for i in range(0, len(SerQue)):#遍历服务队列，寻找等级最低的服务
+            for i in range(0, len(SerQue)):#遍历服务队列，寻找等级最低的服务
 	            if LowService.fan_speed>SerQue[i][1].fan_speed:
 	                LowService=SerQue[i][1]
 	                LowServiceId=SerQue[i][0]
