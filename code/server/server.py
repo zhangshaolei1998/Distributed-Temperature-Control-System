@@ -76,13 +76,19 @@ class MainHandler(tornado.websocket.WebSocketHandler):
             if 'fan' in r_json:
                 print(r_json['fan'])
                 self.dispatcher.change_fan_speed(r_json['room_id'],r_json['fan'])
+                print(self.dispatcher.show_state())
                 self.broadcast(self.dispatcher.show_state())
             return json.dumps({"config":"ok"})
         elif "temp_update" in r_json:
             r_json = r_json['temp_update']
+            state = self.dispatcher.show_state()
+            print(1,state)
             self.dispatcher.set_indoor_temp(r_json['room_id'],r_json['cur_temp'])
+            state = self.dispatcher.show_state()
+            print(2,state)
             self.dispatcher.dispatch()
             state = self.dispatcher.show_state()
+            print(3,state)
             self.broadcast(state)
             return json.dumps({"finish":""})
         elif "server_config" in r_json:

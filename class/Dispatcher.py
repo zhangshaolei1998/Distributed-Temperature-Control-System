@@ -135,7 +135,7 @@ class Dispatcher:
     # 更新室内温度，如果达到目标温度，返回TRUE，否则返回False
     def set_indoor_temp(self, room_id, temp):
         service_id, service = self.find_service(room_id)
-        service.indoor_temp=temp
+        service.set_indoor_temp(temp)
         is_finished = service.is_finished()
         if is_finished:
             move_id, move_service = self.sq.move_service(service_id)
@@ -361,21 +361,23 @@ class Dispatcher:
 
 
     def check_room_state(self):
+        dicts = []
         for room_service in self.lists:
             room_id = room_service[0]
             service_id, service = self.find_service(room_id)
             # state 只有开机的服务，关机的已被删除
             if self.sq.get_service(service_id) is not None:
-                state = 2 # 表示正在服务
+                state = 2  # 表示正在服务
             else:
-                state = 1 # 表示正在等待
+                state = 1  # 表示正在等待
             current_temp = service.indoor_temp
             target_temp = service.temperature
             fan_speed = service.fan_speed
-            fee_rate = 1#三种费率选哪个
-            day_in=0
-            fee = self.GetRoomFee(room_id, day_in) #day_in从哪获得？
-            duration = service.service_time#哪里获得duration
+            fee_rate = 1   #三种费率选哪个
+            day_in = "2019-4-5"
+            fee = self.GetRoomFee(room_id, day_in)    #day_in从哪获得？
+            duration = service.service_time     #哪里获得duration
+            dicts.append([room_id,state, current_temp, target_temp, fan_speed, fee_rate, fee, duration])
 
 
 if __name__ == "__main__":
@@ -388,5 +390,7 @@ if __name__ == "__main__":
     a = dis.create_service("3", 16)
     dis.print_queue()
     dis.change_fan_speed("1",2)
+    dis.print_queue()
+    dis.set_indoor_temp(1,29)
     dis.print_queue()
     #dis.change_fan_speed(123,1)
