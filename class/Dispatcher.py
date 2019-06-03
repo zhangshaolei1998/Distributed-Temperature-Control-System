@@ -230,29 +230,32 @@ class Dispatcher:
 
     # 调节温度
     def change_temperature(self, room_id, temp):
-        service_id, service = self.find_service(room_id)
+        service_id, service = self.find_service(int(room_id))
         return service.set_temperature(temp)
 
     # 调节风速
     def change_fan_speed(self, room_id, speed):
         service_id, service = self.find_service(int(room_id))
-        if Config.min_speed <= speed <= Config.max_speed:
-            service.fan_speed = speed
-        else:
-            return False
-
-
-
-        '''
-        #查看修改风速请求是否被允许
+        print(service.fan_speed)
+        judge=service.set_fan_speed(speed)
+        print(service.fan_speed)
+         #查看修改风速请求是否被允许
         SerQue=self.sq.get_service_queue()#获取服务队列
         WaiQue=self.wq.get_wait_queue()#获取等待队列
         WaiNum=self.wq.get_wait_num()
+        print("SQ")
+        for i in range (len(SerQue)):
+            print(SerQue[i][0],SerQue[i][1].fan_speed)
+        print("WQ")
+        for i in range (len(WaiQue)):
+            print(WaiQue[i][0],WaiQue[i][1].fan_speed)
+        if judge==False:
+            return False
         if WaiNum==0:
             return True
         else:
             LowService=SerQue[0][1]#存储服务队列中优先级最低的服务
-            # HighWait=WaiQue[0][1]#存储等待队列中优先级最高的服务
+            HighWait=WaiQue[0][1]#存储等待队列中优先级最高的服务
             LowServiceId=SerQue[0][0]#分别存储二者id
             HighWaitId=WaiQue[0][0]
             for i in range (len(SerQue)):#遍历服务队列，寻找等级最低的服务
@@ -272,12 +275,18 @@ class Dispatcher:
                         HighWait=WaiQue[i][1]
                         HighWaitId=WaiQue[i][0]
             if HighWait.fan_speed > LowService.fan_speed :#判断是否需要进行调度
-                ServiceQueue.move_service(LowServiceId)#进行调度具体过程
-                WaitQueue.move_service(HighWaitId)
-                ServiceQueue.append_service(HighWaitId,HighWait)
-                WaitQueue.append_service(LowServiceId,LowService)
+                self.sq.move_service(LowServiceId)#进行调度具体过程
+                self.wq.move_service(HighWaitId)
+                self.sq.append_service(HighWaitId,HighWait)
+                self.wq.append_service(LowServiceId,LowService)
+            print("SQ")
+            for i in range (len(SerQue)):
+                print(SerQue[i][0],SerQue[i][1].fan_speed)
+            print("WQ")
+            for i in range (len(WaiQue)):
+                print(WaiQue[i][0],WaiQue[i][1].fan_speed)
             return True
-            '''
+            
 
     def GetServiceFee(self,service_id, day_in):
         for i in range(len(self.lists)):
@@ -419,16 +428,9 @@ class Dispatcher:
 
 if __name__ == "__main__":
     dis=Dispatcher()
-    #测试create_service
     a=dis.create_service("1",17)
-    a=dis.create_service("4", 18)
-    #time.sleep(10)
-    a = dis.create_service("2", 16)
-    a = dis.create_service("3", 16)
-    print(dis.lists)
-    dis.print_queue()
-    dis.change_fan_speed("1",2)
-    dis.print_queue()
-    dis.set_indoor_temp(1,29)
-    dis.print_queue()
+    dis.change_temperature("1",24)
+    dis.change_fan_speed("1",3)
+    #/for i in range (100):
+     #   print(dis.change_temperature("1",i))
     #dis.change_fan_speed(123,1)
