@@ -236,8 +236,8 @@ class Dispatcher:
         #查看修改风速请求是否被允许
         SerQue=self.sq.get_service_queue()#获取服务队列
         WaiQue=self.wq.get_wait_queue()#获取等待队列
-        SerNum=self.sq.get_service_num()
-        if SerNum<=3:
+        WaiNum=self.wq.get_wait_num()
+        if WaiNum==0:
             return True
         else:
 	        LowService=SerQue[0][1]#存储服务队列中优先级最低的服务
