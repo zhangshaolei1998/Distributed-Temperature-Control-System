@@ -81,7 +81,7 @@
 		data() {
 			return {
 				wsuri : "ws://localhost:9999",
-				timeUnit : 1000,
+				timeUnit : 10*1000,
 				highlimit_temp:35,
                 lowlimit_temp:16,
                 highfan_change_temp:1.5,
@@ -152,6 +152,7 @@
 			tempSim(){
 				let defaultTemp = 30;
 				let delta = 0;
+				this.nowState.wind_speed = this.formItem.wind_speed;
 				switch(this.nowState.wind_speed){
 					case 'low':
 						delta = this.lowfan_change_temp;
@@ -162,11 +163,16 @@
 					case 'high':
 						delta = this.highfan_change_temp;
 						break;
+					default:
+						delta = 0.0;
+						break;
 				}
 
 				if(this.nowState.state == 'close' || this.nowState.state == 'busy'){
 					// air conditioner is stopped, recover temperature to default Temp
-					this.nowState.temperature += (this.nowState.temperature < defaultTemp)*(0.5/(60/(this.timeUnit/1000)));
+					//this.nowState.temperature += (this.nowState.temperature < defaultTemp)*(0.5/(60/(this.timeUnit/1000)));
+					this.nowState.temperature += (this.nowState.temperature < defaultTemp)*(0.5);
+					this.sendTemp();
 					return;
 				}
 				
@@ -206,6 +212,7 @@
 				this.websocketsend(sendData);
 			},
 			sendTemp(){
+
 				let sendData = {
 					"temp_update": {
 						"room_id": this.formItem.roomId,
@@ -278,7 +285,8 @@
 				case 'setpara':
 					data = data.setpara;
 					let mode = data.mode;
-					let mode2word = {0:'cool',1:'warm'}
+					let mode2word = {0:'cool',1:'warm'};
+					let fan2word = {0:'low',1:'medium',2:'high'};
 					this.formItem.mode = mode2word[mode];
 					this.formItem.targetTemp = data.target_temp;
 					this.highlimit_temp = data.highlimit_temp;
@@ -286,6 +294,8 @@
 					this.highfan_change_temp = data.highfan_change_temp;
 					this.lowfan_change_temp = data.lowfan_change_temp;
 					this.medfan_change_temp = data.medfan_change_temp;
+					this.formItem.wind_speed = fan2word[data.fan];
+
 					console.log('asd');
 					break;
 
@@ -295,6 +305,7 @@
 					break;
 				case 'cost':
 					this.nowState.fee = data.cost;
+					this.nowState.energy = data.cost;
 					break;
 				case 'energy':
 					this.nowState.energy = data.energy;

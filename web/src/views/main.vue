@@ -42,10 +42,10 @@
 						</FormItem>
 						<FormItem label="Default target temperature">
 							<Icon type="ios-thermometer" />
-							<InputNumber :max="100" v-model="formItem.targetTenp"></InputNumber>℃
+							<InputNumber :max="100" v-model="formItem.default_TargetTemp"></InputNumber>℃
 						</FormItem>
 						<FormItem label="Mode">
-							<RadioGroup v-model="formItem.mode" type="button">
+							<RadioGroup v-model="formItem.Mode" type="button">
 								<Radio label="cool"></Radio>
 								<Radio label="warm"></Radio>
 							</RadioGroup>
@@ -179,26 +179,11 @@
 			　//注意：长连接我们是后台直接1秒推送一条数据， 
 			  //但是点击某个列表时，会发送给后台一个标识，后台根据此标识返回相对应的数据，
 		  //这个时候数据就只能从一个出口出，所以让后台加了一个键，例如键为1时，是每隔1秒推送的数据，为2时是发送标识后再推送的数据，以作区分
-			let data = e.data;
+			let data = eval('(' + e.data + ')');
 			let key = Object.keys(data)[0];
 			switch(key){
 				case 'poweron':
 					this.nowState.state = data.poweron;
-					break;
-				case 'poweroff':
-					if(data.poweron == 'fail'){
-						this.$Message.info('Power off fail, please retry.')
-					}
-					break;
-				case 'setPara':
-					if(data.poweron == 'ok'){
-						this.$Message.info('Setting success!')
-					}else{
-						this.$Message.info('Setting fail, please retry.')
-					}
-					break;
-				case 'checkState':
-					this.roomState = data.poweron;
 					break;
 			}
 		　　}, 
