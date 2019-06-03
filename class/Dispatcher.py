@@ -36,7 +36,7 @@ class Dispatcher:
         # service_id记录每一次服务
         service_id = self.max_service_id+1
         self.max_service_id += 1
-        self.lists.append([room_id, service_id])
+        self.lists.append([int(room_id), service_id])
 
         flag=-1
         # 执行策略 ......
@@ -207,14 +207,20 @@ class Dispatcher:
         service_id = -1
         # 根据room_id找到对应的service_id
         for room_service in self.lists:
+
             if room_service[0] == room_id:
                 service_id = room_service[1]
+                #print("1---", service_id)
         # 查找ServiceQueue和WaitQueue
+
         service = self.sq.get_service(service_id)
         if service is None:
+            #print("2", service_id)
             service = self.wq.get_service(service_id)
             if service is None:
+                #print("3", service_id)
                 return service_id, None
+
         return service_id, service
 
     # 调节模式
@@ -229,7 +235,7 @@ class Dispatcher:
 
     # 调节风速
     def change_fan_speed(self, room_id, speed):
-        service_id, service = self.find_service(room_id)
+        service_id, service = self.find_service(int(room_id))
         if Config.min_speed <= speed <= Config.max_speed:
             service.fan_speed = speed
         else:
@@ -388,6 +394,7 @@ if __name__ == "__main__":
     #time.sleep(10)
     a = dis.create_service("2", 16)
     a = dis.create_service("3", 16)
+    print(dis.lists)
     dis.print_queue()
     dis.change_fan_speed("1",2)
     dis.print_queue()
