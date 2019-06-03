@@ -17,10 +17,11 @@ class Service:
         self.fan_speed = Config.default_speed
 
     # 判断是否达到目标温度，若达到返回TRUE
-    def is_finished(self):
-        if self.indoor_temp > self.temperature and self.mode==2:
+    def is_finished(self, temp):
+        self.indoor_temp = temp
+        if self.indoor_temp > self.temperature and self.mode == 2:
                 return True
-        elif self.indoor_temp < self.temperature and self.mode==1:
+        elif self.indoor_temp < self.temperature and self.mode == 1:
                 return True
         return False
 
