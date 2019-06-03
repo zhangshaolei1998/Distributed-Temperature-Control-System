@@ -336,8 +336,16 @@ class Dispatcher:
         report = get_report(list_room_id, report_type, date)
         return report
     
+    # 设置详单
+    def SetRdr(self, room_id, day_in, fanspeed, feerate, fee):
+        set_rdr(room_id, day_in, fanspeed, feerate, fee)
+    
+    # 设置账单
+    def SetInvoice(self, room_id, day_in, total_fee):
+        set_invoice(room_id, day_in, total_fee)
+    
     # 设置报表
-    def set_report(self, date, room_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr,
+    def SetReport(self, date, room_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr,
                times_of_changetemp, times_of_changespeed):
     set_report(date, room_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr,
                times_of_changetemp, times_of_changespeed)
