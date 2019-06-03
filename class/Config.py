@@ -1,6 +1,6 @@
 class Config:
 
-    mode = 0
+    mode = 1
     min_temp = 16
     max_temp = 30
     default_temp = 26
