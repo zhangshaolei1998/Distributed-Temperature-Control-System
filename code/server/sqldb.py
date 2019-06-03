@@ -20,7 +20,6 @@ def db_init(conn):
         create table if not exists rdr
         (
             room_id int,
-            operate_id int,
             day_in timestamp,
             request_time timestamp,
             request_duration varchar(255),
@@ -41,7 +40,6 @@ def db_init(conn):
         (
             date timestamp,
             room_id int,
-            operate_id int,
             times_of_onoff int,
             duration int,
             total_fee float,
@@ -95,13 +93,13 @@ def get_conn():
     conn = create_connection()
     return conn
 
-def set_rdr(room_id, operate_id, day_in, fanspeed, feerate, fee):
+def set_rdr(room_id, day_in, fanspeed, feerate, fee):
     conn = get_conn()
     cur = conn.cursor()
     request_time = datetime.datetime.now()
     day_in = datetime.datetime.strptime(day_in, "%Y-%m-%d")
     duration = str(request_time-day_in)
-    cur.execute("insert into rdr values (?,?,?,?,?,?,?,?)",(room_id,operate_id,day_in,request_time,duration,fanspeed,feerate,fee))
+    cur.execute("insert into rdr values (?,?,?,?,?,?,?)",(room_id,day_in,request_time,duration,fanspeed,feerate,fee))
     conn.commit()
     close_connection(conn)
     print("set_rdr")
@@ -130,11 +128,11 @@ def get_invoice(room_id,day_in):
     return_list = cur.fetchall()
     close_connection(conn)
     return return_list
-def set_report(date, room_id, operate_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr, times_of_changetemp, times_of_changespeed):
+def set_report(date, room_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr, times_of_changetemp, times_of_changespeed):
     date = datetime.datetime.strptime(date,"%Y-%m-%d")
     conn = get_conn()
     cur = conn.cursor()
-    cur.execute("insert into report values(?,?,?,?,?,?,?,?,?,?)",(date,room_id,operate_id,times_of_onoff,duration,total_fee,times_of_dispatch,number_of_rdr,times_of_changetemp,times_of_changespeed))
+    cur.execute("insert into report values(?,?,?,?,?,?,?,?,?)",(date,room_id,times_of_onoff,duration,total_fee,times_of_dispatch,number_of_rdr,times_of_changetemp,times_of_changespeed))
     conn.commit()
     close_connection(conn)
 
@@ -172,9 +170,9 @@ def get_report(list_room_id, type_report, date):
             cur.execute("select * from report where room_id=? and date(date) >= date(?) and date(date) <= date(?)",(room_id,date1,date2))
             report.append(cur.fetchall())
     return report
-conn = create_connection()
-db_init(conn)
-close_connection(conn)
+#conn = create_connection()
+#db_init(conn)
+#close_connection(conn)
 #set_rdr(room_id, operate_id, day_in, fanspeed, feerate, fee)
 #set_rdr(1, 1, "2019-1-2", 3, 0.5, 4.6)
 #print(get_rdr(1,"2019-01-02 00:00:00"))
@@ -188,4 +186,4 @@ close_connection(conn)
 #set_report(date, times_of_onoff, operate_id, duration, total_fee, times_of_dispatch, number_of_rdr, number_of_change_time, number_of_changespeed)
 #set_report("2019-4-6",1,2,1,12,12.1,12,12,1,1)
 #print(get_report([1],0,"2019-4-5"))
-print(get_report([1],2,"2019"))
+#print(get_report([1],2,"2019"))
