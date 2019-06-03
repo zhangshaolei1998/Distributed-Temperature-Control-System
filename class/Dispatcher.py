@@ -274,13 +274,13 @@ class Dispatcher:
         for i in range(len(self.lists)):
             if service_id == self.lists[i][1]:
                 room_id = self.lists[i][0]
-        rdr = sqldb.get_rdr(room_id, day_in)
+        rdr = get_rdr(room_id, day_in)
         for i in range(len(self.lists)):
             if service_id == rdr[i][1]:
                 return rdr[i][6]
 
     def GetRoomFee(self,room_id, day_in):
-        InvoiceLists = sqldb.get_invoice(room_id, day_in)
+        InvoiceLists = get_invoice(room_id, day_in)
         return InvoiceLists[0][2]
 
 
