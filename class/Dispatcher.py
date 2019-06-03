@@ -234,6 +234,9 @@ class Dispatcher:
             service.fan_speed = speed
         else:
             return False
+
+
+
         '''
         #查看修改风速请求是否被允许
         SerQue=self.sq.get_service_queue()#获取服务队列

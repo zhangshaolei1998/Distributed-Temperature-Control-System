@@ -18,9 +18,9 @@ class Service:
 
     # 判断是否达到目标温度，若达到返回TRUE
     def is_finished(self):
-        if self.indoor_temp > self.temperature and self.mode == 2:
+        if self.indoor_temp >= self.temperature and self.mode == 2:
                 return True
-        elif self.indoor_temp < self.temperature and self.mode == 1:
+        elif self.indoor_temp <= self.temperature and self.mode == 1:
                 return True
         return False
 
