@@ -83,7 +83,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
             self.dispatcher.set_indoor_temp(r_json['room_id'],r_json['cur_temp'])
             self.dispatcher.dispatch()
             state = self.dispatcher.show_state()
-            broadcast(state)
+            self.broadcast(state)
             return json.dumps({"finish":""})
         elif "server_config" in r_json:
             r_json = r_json['server_config']
@@ -96,13 +96,13 @@ class MainHandler(tornado.websocket.WebSocketHandler):
                 r_json['FeeRate_M'],
                 r_json['FeeRate_L']
                 )
-            return 'ok'
+            return json.dumps({'server_config':'ok'})
         elif "CheckRoomState" in r_json:
             ret = self.dispatcher.check_room_state()
-                return ret
+            return ret
         elif "startUp" in r_json:
-
-            return 'ok'
+            self.dispatcher.PowerON()
+            return json.dumps({'startUp':'ok'})
         else:
             print("json format error")
 
