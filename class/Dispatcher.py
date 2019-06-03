@@ -336,19 +336,36 @@ class Dispatcher:
         report = get_report(list_room_id, report_type, date)
         return report
     
-    # 设置详单
+    '''SetRdr设置详单
+        room_id int,                    //房间编号
+        day_in timestamp,               //入住时间
+        fanspeed int,                   //风速
+        feerate float,                  //费率
+        fee float,                      //费用'''
     def SetRdr(self, room_id, day_in, fanspeed, feerate, fee):
         set_rdr(room_id, day_in, fanspeed, feerate, fee)
     
-    # 设置账单
+    '''SetInvoice设置账单
+            room_id int,                    //房间编号
+            day_in timestamp,               //入住时间
+            total_fee float                //总费用'''
     def SetInvoice(self, room_id, day_in, total_fee):
         set_invoice(room_id, day_in, total_fee)
     
-    # 设置报表
+    '''SetReport设置报表
+            date timestamp,                 //入住日期
+            room_id int,                    //房间编号
+            times_of_onoff int,             //开关次数
+            duration int,                   //经过时间
+            total_fee float,                //总费用
+            times_of_dispatch int,          //调度次数
+            number_of_rdr int,              //详单数
+            times_of_changetemp int,        //调温次数
+            times_of_changespeed int        //变速次数'''
     def SetReport(self, date, room_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr,
                times_of_changetemp, times_of_changespeed):
-    set_report(date, room_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr,
-               times_of_changetemp, times_of_changespeed)
+        set_report(date, room_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr,
+                   times_of_changetemp, times_of_changespeed)
 
 
     def print_queue(self):
