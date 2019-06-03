@@ -17,8 +17,7 @@ class Service:
         self.fan_speed = Config.default_speed
 
     # 判断是否达到目标温度，若达到返回TRUE
-    def is_finished(self, temp):
-        self.indoor_temp = temp
+    def is_finished(self):
         if self.indoor_temp > self.temperature and self.mode == 2:
                 return True
         elif self.indoor_temp < self.temperature and self.mode == 1:
@@ -40,6 +39,10 @@ class Service:
     # 减少等待时长
     def reduce_wait_time(self, time_interval):
         self.wait_time -= time_interval
+       
+    # 更新室内温度
+    def set_indoor_temp(self, indoor_temp):
+        self.indoor_temp = indoor_temp
 
     # 设置模式(暂定为制冷、制热)用1、2表示
     def set_mode(self, mode):
