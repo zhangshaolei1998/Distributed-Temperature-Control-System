@@ -289,16 +289,21 @@ class Dispatcher:
             
 
     def GetServiceFee(self,service_id, day_in):
+        room_id=0
         for i in range(len(self.lists)):
             if service_id == self.lists[i][1]:
                 room_id = self.lists[i][0]
-        rdr = get_rdr(room_id, day_in)
+        rdr = get_rdr(int (room_id), day_in)
+        if len(rdr)==0:
+            return 0
         for i in range(len(self.lists)):
             if service_id == rdr[i][1]:
                 return rdr[i][6]
 
     def GetRoomFee(self,room_id, day_in):
         InvoiceLists = get_invoice(room_id, day_in)
+        if len(InvoiceLists)==0:
+            return 0
         return InvoiceLists[0][2]
 
 
@@ -427,10 +432,13 @@ class Dispatcher:
 
 
 if __name__ == "__main__":
+    conn = create_connection()
+    db_init(conn)
     dis=Dispatcher()
     a=dis.create_service("1",17)
-    dis.change_temperature("1",24)
-    dis.change_fan_speed("1",3)
+    dis.GetServiceFee(1,"2019-1-2")
+    dis.GetRoomFee(1,"2019-1-2")
+    #dis.change_fan_speed("1",3)
     #/for i in range (100):
      #   print(dis.change_temperature("1",i))
     #dis.change_fan_speed(123,1)
