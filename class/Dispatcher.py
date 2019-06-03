@@ -132,11 +132,10 @@ class Dispatcher:
 
         return finish_id #返回结束服务的room_id
 
-
     # 更新室内温度，如果达到目标温度，返回TRUE，否则返回False
     def set_indoor_temp(self, room_id, temp):
         service_id, service = self.find_service(room_id)
-        is_finished = service.is_finished(temp)
+        is_finished = service.is_finished()
         if is_finished:
             move_id, move_service = self.sq.move_service(service_id)
             return True
