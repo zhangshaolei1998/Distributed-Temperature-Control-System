@@ -20,12 +20,14 @@ def db_init(conn):
         create table if not exists rdr
         (
             room_id int,
+            operate_id int,
             day_in timestamp,
             request_time timestamp,
             request_duration varchar(255),
             fanspeed int,
             feerate float,
-            fee float
+            fee float,
+            temp float
         );''')
         cur.execute('''
         create table if not exists invoice
@@ -93,13 +95,13 @@ def get_conn():
     conn = create_connection()
     return conn
 
-def set_rdr(room_id, day_in, fanspeed, feerate, fee):
+def set_rdr(room_id, operate_id, day_in, fanspeed, feerate, fee, temp):
     conn = get_conn()
     cur = conn.cursor()
     request_time = datetime.datetime.now()
     day_in = datetime.datetime.strptime(day_in, "%Y-%m-%d")
     duration = str(request_time-day_in)
-    cur.execute("insert into rdr values (?,?,?,?,?,?,?)",(room_id,day_in,request_time,duration,fanspeed,feerate,fee))
+    cur.execute("insert into rdr values (?,?,?,?,?,?,?,?,?)",(room_id,operate_id,day_in,request_time,duration,fanspeed,feerate,fee,temp))
     conn.commit()
     close_connection(conn)
     print("set_rdr")
