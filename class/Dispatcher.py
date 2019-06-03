@@ -235,7 +235,7 @@ class Dispatcher:
 
     # 调节风速
     def change_fan_speed(self, room_id, speed):
-        service_id, service = self.find_service(int(room_id))
+        service_id, service = self.find_service(int(room_id))    
         print(service.fan_speed)
         judge=service.set_fan_speed(speed)
         print(service.fan_speed)
@@ -286,8 +286,7 @@ class Dispatcher:
             for i in range (len(WaiQue)):
                 print(WaiQue[i][0],WaiQue[i][1].fan_speed)
             return True
-            
-
+    '''            
     def GetServiceFee(self,service_id, day_in):
         room_id=0
         for i in range(len(self.lists)):
@@ -296,15 +295,23 @@ class Dispatcher:
         rdr = get_rdr(int (room_id), day_in)
         if len(rdr)==0:
             return 0
-        for i in range(len(self.lists)):
-            if service_id == rdr[i][1]:
-                return rdr[i][6]
-
-    def GetRoomFee(self,room_id, day_in):
-        InvoiceLists = get_invoice(room_id, day_in)
-        if len(InvoiceLists)==0:
+         TotalSerFee=0
+        for i in range(len(rdr)):
+            if service_id == rdr["service_id"]:
+                TotalSerFee=TotalSerFee+rdr["fee"]
+        return TotalSerFee    
+    '''
+    def GetRoomFee(self,room_id,day_in):
+        rdr = get_rdr(room_id, day_in)
+        print(rdr)
+        if len(rdr)==0:
             return 0
-        return InvoiceLists[0][2]
+        TotalRoomFee=0
+        for i in range(len(rdr)):
+            if room_id == rdr[i][0]:
+                TotalRoomFee=TotalRoomFee+rdr[i][7]
+        set_invoice(room_id, day_in,TotalRoomFee)
+        return TotalRoomFee
 
 
     # 初始化
@@ -357,7 +364,7 @@ class Dispatcher:
         feerate float,                  //费率
         fee float,                      //费用'''
     def SetRdr(self, room_id, day_in, fanspeed, feerate, fee):
-        set_rdr(room_id, day_in, fanspeed, feerate, fee)
+        set_rdr(room_id,0, day_in, fanspeed, feerate, fee)
     
     '''SetInvoice设置账单
             room_id int,                    //房间编号
@@ -435,10 +442,15 @@ if __name__ == "__main__":
     conn = create_connection()
     db_init(conn)
     dis=Dispatcher()
-    a=dis.create_service("1",17)
-    dis.GetServiceFee(1,"2019-1-2")
-    dis.GetRoomFee(1,"2019-1-2")
-    #dis.change_fan_speed("1",3)
+    a=dis.create_service(1,17)
+    dis.SetRdr(1,"2019-1-2",1,1.2,8)
+    dis.SetRdr(2,"2019-1-2",1,1.2,4)
+    dis.SetRdr(1,"2019-1-2",1,1.2,3)
+    dis.SetRdr(2,"2019-1-2",1,1.2,2)
+    dis.SetRdr(1,"2019-1-2",1,1.2,1)
+    #dis.GetServiceFee(1,"2019-1-2")
+    print(dis.GetRoomFee(2,"2019-1-2"))
+    dis.change_fan_speed("1",3)
     #/for i in range (100):
      #   print(dis.change_temperature("1",i))
     #dis.change_fan_speed(123,1)
