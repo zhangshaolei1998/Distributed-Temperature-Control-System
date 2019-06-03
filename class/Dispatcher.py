@@ -335,6 +335,12 @@ class Dispatcher:
     def PrintReport(self, list_room_id, report_type, date):
         report = get_report(list_room_id, report_type, date)
         return report
+    
+    # 设置报表
+    def set_report(self, date, room_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr,
+               times_of_changetemp, times_of_changespeed):
+    set_report(date, room_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr,
+               times_of_changetemp, times_of_changespeed)
 
 
     def print_queue(self):
