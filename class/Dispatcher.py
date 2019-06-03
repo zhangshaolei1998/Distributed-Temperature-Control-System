@@ -135,6 +135,7 @@ class Dispatcher:
     # 更新室内温度，如果达到目标温度，返回TRUE，否则返回False
     def set_indoor_temp(self, room_id, temp):
         service_id, service = self.find_service(room_id)
+        service.indoor_temp=temp
         is_finished = service.is_finished()
         if is_finished:
             move_id, move_service = self.sq.move_service(service_id)
@@ -230,9 +231,10 @@ class Dispatcher:
     def change_fan_speed(self, room_id, speed):
         service_id, service = self.find_service(room_id)
         if Config.min_speed <= speed <= Config.max_speed:
-            Service.fan_speed = speed
+            service.fan_speed = speed
         else:
             return False
+        '''
         #查看修改风速请求是否被允许
         SerQue=self.sq.get_service_queue()#获取服务队列
         WaiQue=self.wq.get_wait_queue()#获取等待队列
@@ -240,32 +242,33 @@ class Dispatcher:
         if WaiNum==0:
             return True
         else:
-	        LowService=SerQue[0][1]#存储服务队列中优先级最低的服务
-	        HighWait=WaiQue[0][1]#存储等待队列中优先级最高的服务
-	        LowServiceId=SerQue[0][0]#分别存储二者id
-	        HighWaitId=WaiQue[0][0]
-	        for i in range (len(SerQue)):#遍历服务队列，寻找等级最低的服务
-	                if LowService.fan_speed>SerQue[i][1].fan_speed:
-	                    LowService=SerQue[i][1]
-	                    LowServiceId=SerQue[i][0]
-	                if LowService.fan_speed==SerQue[i][1].fan_speed:
-	                    if LowService.service_time<SerQue[i][1].service_time:
-	                        LowService=SerQue[i][1]
-	                        LowServiceId=SerQue[i][0]
-	        for i in range(0, len(WaiQue)):#遍历等待队列，寻找等级最高的服务
-	            if HighWait.fan_speed<WaiQue[i][1].fan_speed:
-	                HighWait=WaiQue[i][1]
-	                HighWaitId=WaiQue[i][0]
-	            if HighWait.fan_speed==WaiQue[i][1].fan_speed:
-	                if HighWait.wait_time>WaiQue[i][1].wait_time:
-	                    HighWait=WaiQue[i][1]
-	                    HighWaitId=WaiQue[i][0]
-	        if HighWait.fan_speed > LowService.fan_speed :#判断是否需要进行调度
-	            ServiceQueue.move_service(LowServiceId)#进行调度具体过程
-	            WaitQueue.move_service(HighWaitId)
-	            ServiceQueue.append_service(HighWaitId,HighWait)
-	            WaitQueue.append_service(LowServiceId,LowService)
-	        return True
+            LowService=SerQue[0][1]#存储服务队列中优先级最低的服务
+            # HighWait=WaiQue[0][1]#存储等待队列中优先级最高的服务
+            LowServiceId=SerQue[0][0]#分别存储二者id
+            HighWaitId=WaiQue[0][0]
+            for i in range (len(SerQue)):#遍历服务队列，寻找等级最低的服务
+                if LowService.fan_speed>SerQue[i][1].fan_speed:
+                    LowService=SerQue[i][1]
+                    LowServiceId=SerQue[i][0]
+                if LowService.fan_speed==SerQue[i][1].fan_speed:
+                    if LowService.service_time<SerQue[i][1].service_time:
+                        LowService=SerQue[i][1]
+                        LowServiceId=SerQue[i][0]
+            for i in range(0, len(WaiQue)):#遍历等待队列，寻找等级最高的服务
+                if HighWait.fan_speed<WaiQue[i][1].fan_speed:
+                    HighWait=WaiQue[i][1]
+                    HighWaitId=WaiQue[i][0]
+                if HighWait.fan_speed==WaiQue[i][1].fan_speed:
+                    if HighWait.wait_time>WaiQue[i][1].wait_time:
+                        HighWait=WaiQue[i][1]
+                        HighWaitId=WaiQue[i][0]
+            if HighWait.fan_speed > LowService.fan_speed :#判断是否需要进行调度
+                ServiceQueue.move_service(LowServiceId)#进行调度具体过程
+                WaitQueue.move_service(HighWaitId)
+                ServiceQueue.append_service(HighWaitId,HighWait)
+                WaitQueue.append_service(LowServiceId,LowService)
+            return True
+            '''
 
     def GetServiceFee(self,service_id, day_in):
         for i in range(len(self.lists)):
@@ -380,5 +383,7 @@ if __name__ == "__main__":
     #time.sleep(10)
     a = dis.create_service("2", 16)
     a = dis.create_service("3", 16)
-    dis.change_fan_speed("1",1)
+    dis.print_queue()
+    dis.change_fan_speed("1",2)
+    dis.print_queue()
     #dis.change_fan_speed(123,1)
