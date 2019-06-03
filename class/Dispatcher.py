@@ -358,21 +358,23 @@ class Dispatcher:
 
 
     def check_room_state(self):
+        dicts = []
         for room_service in self.lists:
             room_id = room_service[0]
             service_id, service = self.find_service(room_id)
             # state 只有开机的服务，关机的已被删除
             if self.sq.get_service(service_id) is not None:
-                state = 2 # 表示正在服务
+                state = 2  # 表示正在服务
             else:
-                state = 1 # 表示正在等待
+                state = 1  # 表示正在等待
             current_temp = service.indoor_temp
             target_temp = service.temperature
             fan_speed = service.fan_speed
-            fee_rate = 1#三种费率选哪个
-            day_in=0
-            fee = self.GetRoomFee(room_id, day_in) #day_in从哪获得？
-            duration = service.service_time#哪里获得duration
+            fee_rate = 1   #三种费率选哪个
+            day_in = 0
+            fee = self.GetRoomFee(room_id, day_in)    #day_in从哪获得？
+            duration = service.service_time     #哪里获得duration
+            dicts.append([room_id,state, current_temp, target_temp, fan_speed, fee_rate, fee, duration])
 
 
 if __name__ == "__main__":
