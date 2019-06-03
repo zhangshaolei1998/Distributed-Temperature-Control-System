@@ -42,7 +42,7 @@ class Service:
 
     # 设置模式(暂定为制冷、制热)用1、2表示
     def set_mode(self, mode):
-        if 0 <= mode <= 3:
+        if 1 <= mode <= 2:
             self.mode = mode
             return True
         else:
