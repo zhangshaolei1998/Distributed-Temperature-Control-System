@@ -130,11 +130,11 @@ def get_invoice(room_id,day_in):
     return_list = cur.fetchall()
     close_connection(conn)
     return return_list
-def set_report(date, room_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr, times_of_changetemp, times_of_changespeed):
+def set_report(date, room_id, service_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr, times_of_changetemp, times_of_changespeed):
     date = datetime.datetime.strptime(date,"%Y-%m-%d")
     conn = get_conn()
     cur = conn.cursor()
-    cur.execute("insert into report values(?,?,?,?,?,?,?,?,?)",(date,room_id,times_of_onoff,duration,total_fee,times_of_dispatch,number_of_rdr,times_of_changetemp,times_of_changespeed))
+    cur.execute("insert into report values(?,?,?,?,?,?,?,?,?,?)",(date,room_id, serivce_id,times_of_onoff,duration,total_fee,times_of_dispatch,number_of_rdr,times_of_changetemp,times_of_changespeed))
     conn.commit()
     close_connection(conn)
 
