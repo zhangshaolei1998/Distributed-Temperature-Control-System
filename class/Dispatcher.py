@@ -3,6 +3,8 @@ from ServiceQueue import ServiceQueue
 from WaitQueue import WaitQueue
 from Config import Config
 import time
+import xlwt     # 用于输出xls文件
+
 import sys
 
 sys.path.append("..\code\server")
@@ -28,10 +30,26 @@ class Dispatcher:
         self.wait_time=120 #默认等待服务时长 120s
         self.max_wait_time = 999999999999  # 最大等待服务时长，若等待时长为此值，等待时长不减少，服务队列空的时候才加入服务队列
         self.unit=60 #时间片长度60s
+        
+        self.day_in = {}                # 入住时间
+        self.day_out = {}               # 退房时间
+        self.TimesOfOnoff = {}          # 开关次数
+        self.TimesOfChangetemp = {}     # 调温次数
+        self.TimesOfChangespeed = {}    # 调风速次数
+        self.TimesOfDispatch = {}       # 调度次数
 
 
     # 创建一个服务并添加队列信息 返回1：busy 返回2：ok 返回3：error
     def create_service(self, room_id,indoor_temp):
+        
+        curtime = time.strftime('%Y-%m-%d')
+        self.day_in.setdefault(room_id, curtime)
+        self.TimesOfOnoff.setdefault(room_id, 0)
+        self.TimesOfChangetemp.setdefault(room_id, 0)
+        self.TimesOfChangespeed.setdefault(room_id, 0)
+        self.TimesOfDispatch.setdefault(room_id, 0)
+        
+        
         service = Service(indoor_temp)
         # service_id记录每一次服务
         service_id = self.max_service_id+1
@@ -101,6 +119,7 @@ class Dispatcher:
             if is_finished:
                 move_id, move_service = self.sq.move_service(service_map[0])
                 finish_id.append(self.service_id2room_id(move_id))
+                self.TimesOfDispatch[self.service_id2room_id(move_id)] += 1
 
         #遍历等待队列。若等待时间降为0，移入服务队列。
         for service_map in self.wq.wait_queue:
@@ -111,6 +130,7 @@ class Dispatcher:
 
                 #从服务队列移除服务时间最长的服务
                 move_id, move_service = self.sq.move_service(longest[0])
+                self.TimesOfDispatch[self.service_id2room_id(move_id)] += 1
                 # 分配等待服务时间
                 move_service.set_wait_time(self.wait_time)
                 # 移入等待队列
@@ -139,6 +159,7 @@ class Dispatcher:
         is_finished = service.is_finished()
         if is_finished:
             move_id, move_service = self.sq.move_service(service_id)
+            self.TimesOfDispatch[room_id] += 1
             return True
         return False
 
@@ -178,6 +199,7 @@ class Dispatcher:
         # 删除服务对象
         if service is not None:
             del service
+            self.TimesOfOnoff[room_id] += 1
         else:
             return False
 
@@ -231,10 +253,13 @@ class Dispatcher:
     # 调节温度
     def change_temperature(self, room_id, temp):
         service_id, service = self.find_service(int(room_id))
+        self.TimesOfChangetemp[room_id] += 1
         return service.set_temperature(temp)
 
     # 调节风速
     def change_fan_speed(self, room_id, speed):
+        
+        self.TimesOfChangespeed[room_id] += 1
         service_id, service = self.find_service(int(room_id))    
         print(service.fan_speed)
         judge=service.set_fan_speed(speed)
@@ -354,8 +379,47 @@ class Dispatcher:
 
     # 打印报表
     def PrintReport(self, list_room_id, report_type, date):
+    try:
         report = get_report(list_room_id, report_type, date)
-        return report
+        print("========================PrintReport========================")
+        workbook = xlwt.Workbook()
+        worksheet = workbook.add_sheet('Report')
+
+        borders = xlwt.Borders()  # Create Borders
+        borders.left = xlwt.Borders.THICK
+        borders.right = xlwt.Borders.THICK
+        borders.top = xlwt.Borders.THICK
+        borders.bottom = xlwt.Borders.THICK
+        borders.left_colour = 0x40
+        borders.right_colour = 0x40
+        borders.top_colour = 0x40
+        borders.bottom_colour = 0x40
+
+        pattern = xlwt.Pattern()  # Create the Pattern
+        pattern.pattern = xlwt.Pattern.SOLID_PATTERN  # May be: NO_PATTERN, SOLID_PATTERN, or 0x00 through 0x12
+        pattern.pattern_fore_colour = 5  # May be: 8 through 63. 0 = Black, 1 = White, 2 = Red, 3 = Green, 4 = Blue, 5 = Yellow, 6 = Magenta, 7 = Cyan, 16 = Maroon, 17 = Dark Green, 18 = Dark Blue, 19 = Dark Yellow , almost brown), 20 = Dark Magenta, 21 = Teal, 22 = Light Gray, 23 = Dark Gray, the list goes on...
+        style = xlwt.XFStyle()  # Create the Pattern
+        style.pattern = pattern  # Add Pattern to Style
+        style.borders = borders  # Add Borders to Style
+        titles = ['Date', 'Room_ID', 'Service_ID', 'TimesOfOnOff', 'Duration', 'TotalFee', 'TimesOfDispatch', 'NumberOfRdr',
+                'TimesOfChangeTemp', 'TimesOfChangeSpeed']
+
+        for i in range(0, 10):
+            worksheet.col(i).width = 5000
+            worksheet.write(0, i, titles[i], style)
+
+        j = 1
+        for reporter in report:
+            for reporterr in reporter:
+                for i in range(0, 10):
+                    worksheet.write(j, i, reporterr[i])
+                j += 1
+        file_name = time.strftime('%Y-%m-%d_%H-%M-%S')
+        file_name = str(file_name) + '_Report.xls'
+        workbook.save(file_name)
+        return True
+    except:
+        return False
     
     '''SetRdr设置详单
         room_id int,                    //房间编号
@@ -383,11 +447,23 @@ class Dispatcher:
             number_of_rdr int,              //详单数
             times_of_changetemp int,        //调温次数
             times_of_changespeed int        //变速次数'''
-    def SetReport(self, date, room_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr,
-               times_of_changetemp, times_of_changespeed):
-        set_report(date, room_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr,
+    def SetReport(self, date, room_id, service_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr,
+                   times_of_changetemp, times_of_changespeed):
+        set_report(date, room_id, service_id, times_of_onoff, duration, total_fee, times_of_dispatch, number_of_rdr,
                    times_of_changetemp, times_of_changespeed)
 
+    #退房间 里面设置报表
+    def CheckOut(self, room_id):
+        for room_service in self.lists:
+            if room_service[0] == room_id:
+                service_id = room_service[1]
+                service = self.sq.get_service(service_id)
+        NumberOfRdr = 12
+        self.SetReport(self.day_in[room_id], room_id, service_id, self.TimesOfOnoff[room_id], service.service_time,
+                  self.GetRoomFee(room_id, self.day_in[room_id]), self.TimesOfDispatch[room_id], NumberOfRdr,
+                  self.TimesOfChangetemp[room_id], self.TimesOfChangespeed[room_id])
+        curtime = time.strftime('%Y-%m-%d')
+        self.day_out.setdefault(room_id, curtime)
 
     def print_queue(self):
 
